@@ -86,7 +86,16 @@ function getAppPayload(){
 }
 
 function applyAppPayload(data){
-  if(Array.isArray(data.students)) students = data.students;
+  if(Array.isArray(data.students)){
+    students = data.students.map(s=>{
+      // Firebase는 객체 키를 문자열로 저장하므로 숫자 키로 변환
+      const enr={};
+      [1,2,3,4].forEach(q=>{enr[q]=Array.isArray(s.enrollments?.[q])?s.enrollments[q]:Array.isArray(s.enrollments?.[String(q)])?s.enrollments[String(q)]:[];});
+      const pay={};
+      [1,2,3,4].forEach(q=>{pay[q]=s.payments?.[q]??s.payments?.[String(q)]??{paid:false};});
+      return {...s, enrollments:enr, payments:pay};
+    });
+  }
   if(Array.isArray(data.notices)) notices = data.notices;
   if(typeof data.nextNoticeId === "number") nextNoticeId = data.nextNoticeId;
 }
