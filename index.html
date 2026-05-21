@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>서봉초등학교 방과후 돌봄 관리</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ===== LOGIN ===== -->
+<div id="loginScreen">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+  <div class="blob blob-4"></div>
+  <div class="blob blob-5"></div>
+
+  <span class="deco-icon" style="top:11%;left:8%;animation-delay:0s;">⭐</span>
+  <span class="deco-icon" style="top:19%;right:11%;animation-delay:1.5s;">🌸</span>
+  <span class="deco-icon" style="bottom:23%;left:11%;animation-delay:3s;">🌈</span>
+  <span class="deco-icon" style="bottom:13%;right:9%;animation-delay:2s;">🎵</span>
+  <span class="deco-icon" style="top:52%;left:4%;animation-delay:4s;">🦋</span>
+  <span class="deco-icon" style="top:32%;right:4%;animation-delay:0.5s;">🌻</span>
+  <span class="deco-icon" style="top:65%;right:18%;animation-delay:2.5s;">🍀</span>
+  <span class="deco-icon" style="top:7%;left:40%;animation-delay:1s;">🎀</span>
+
+  <div class="login-main-title">
+    <div class="app-title-big">🏫 서봉초등학교<br>방과후 돌봄 관리</div>
+    <div class="app-title-sub">After School & Care Program System · 2026</div>
+  </div>
+
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="school-icon">🌟</div>
+      <h1>서봉초 방과후</h1>
+      <p>로그인하여 시작하세요 ✨</p>
+    </div>
+
+    <div class="login-tabs">
+      <button class="login-tab active" onclick="switchLoginTab('admin')">🔑 관리자</button>
+      <button class="login-tab" onclick="switchLoginTab('student')">👦 학생·학부모</button>
+    </div>
+
+    <div id="adminLoginForm">
+      <div class="login-guide">🔒 관리자 코드를 입력해주세요.</div>
+      <div class="input-group">
+        <label>관리자 코드</label>
+        <input type="password" id="adminCode" placeholder="관리자 코드 입력" onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+    </div>
+
+    <div id="studentLoginForm" style="display:none">
+      <div class="login-guide">📋 학생 개별 코드를 입력해주세요.<br>코드를 모르시면 늘봄전담실로 문의해 주세요.<br>☎ 031-370-4907</div>
+      <div class="input-group">
+        <label>학생 개별 코드</label>
+        <input type="password" id="studentCode" placeholder="개별 코드 입력" onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+    </div>
+
+    <div class="login-error" id="loginError">⚠️ 코드가 올바르지 않습니다. 다시 확인해주세요.</div>
+    <div id="dataLoading" style="text-align:center;font-size:13px;color:var(--text-mid);margin-bottom:10px;padding:8px;background:var(--sun-pale);border-radius:var(--radius-sm);">☁️ 클라우드 데이터 불러오는 중...</div>
+    <button class="btn-login" onclick="doLogin()" disabled>🚀 로그인</button>
+  </div>
+
+  <div class="login-footer">
+    made with ❤️ by 서봉초등학교 늘봄전담실장<br>
+    모든 권한은 서봉초등학교 늘봄전담실장에게 있습니다.
+  </div>
+</div>
+
+<!-- ===== MAIN APP ===== -->
+<div id="mainApp">
+  <header class="app-header">
+    <div class="header-left">
+      <div class="header-logo">🌟</div>
+      <div>
+        <div class="header-title">서봉초등학교 방과후 돌봄 관리</div>
+        <div class="header-title-sub">After School Program System</div>
+      </div>
+      <span class="header-badge" id="roleBadge"></span>
+    </div>
+    <div class="header-right">
+      <span class="header-user" id="headerUser"></span>
+      <button class="notice-bell" id="noticeBell" onclick="renderTab('notice')" style="display:none;">
+        🔔 공지사항<span class="notice-dot" id="noticeDot" style="display:none;"></span>
+      </button>
+      <button class="btn-logout" onclick="doLogout()">로그아웃</button>
+    </div>
+  </header>
+
+  <nav class="nav-tabs" id="navTabs"></nav>
+
+  <div class="content" id="appContent"></div>
+
+  <footer class="app-footer">
+    made with ❤️ by 서봉초등학교 늘봄전담실장 &nbsp;|&nbsp; 모든 권한은 서봉초등학교 늘봄전담실장에게 있습니다.
+  </footer>
+</div>
+
+<!-- 학생 등록/수정 모달 -->
+<div class="modal-overlay" id="studentModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title" id="studentModalTitle">🧒 학생 등록</h2>
+      <button class="modal-close" onclick="closeModal('studentModal')">✕</button>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>학년</label><select id="f_grade"><option value="1">1학년</option><option value="2">2학년</option><option value="3">3학년</option><option value="4">4학년</option><option value="5">5학년</option><option value="6">6학년</option></select></div>
+      <div class="form-group"><label>반</label><select id="f_class"><option value="1">1반</option><option value="2">2반</option><option value="3">3반</option><option value="4">4반</option></select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>번호</label><input type="number" id="f_number" placeholder="번호" min="1" max="40"></div>
+      <div class="form-group"><label>이름</label><input type="text" id="f_name" placeholder="학생 이름"></div>
+    </div>
+    <div class="form-group">
+      <label>지원금 유형</label>
+      <select id="f_subsidy">
+        <option value="none">해당없음</option>
+        <option value="free">🎫 자유수강권 (연간 60만원)</option>
+        <option value="grade3">🟢 초3 방과후 이용권 (연간 50만원)</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>수강 과목 (1분기)</label>
+      <div class="check-grid" id="courseCheckGrid"></div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:8px;">
+      <button class="btn btn-primary" style="flex:1" onclick="saveStudent()">💾 저장</button>
+      <button class="btn btn-secondary" onclick="closeModal('studentModal')">취소</button>
+    </div>
+  </div>
+</div>
+
+<!-- 엑셀 업로드 모달 -->
+<div class="modal-overlay" id="uploadModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title">📊 학생 명단 업로드</h2>
+      <button class="modal-close" onclick="closeModal('uploadModal')">✕</button>
+    </div>
+    <div class="form-group"><label>연도</label><select id="uploadYear"><option value="2026">2026학년도</option><option value="2027">2027학년도</option></select></div>
+
+    <!-- 서식 다운로드 안내 -->
+    <div style="background:var(--sun-pale);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:14px;">
+      <div style="font-size:12px;font-weight:700;color:var(--text-mid);margin-bottom:8px;">📄 업로드 파일 형식 안내</div>
+      <div style="font-size:12px;color:var(--text-mid);line-height:1.9;margin-bottom:10px;">
+        A열 = 학년 &nbsp;·&nbsp; B열 = 반 &nbsp;·&nbsp; C열 = 번호 &nbsp;·&nbsp; D열 = 이름<br>
+        <span style="color:var(--text-light);">예시: 3, 1, 10, 홍길동</span>
+      </div>
+      <button class="btn btn-secondary btn-sm" style="width:100%;justify-content:center;display:flex;align-items:center;gap:6px;" onclick="downloadSampleCSV()">
+        ⬇️ 샘플 파일 다운로드 (.csv)
+      </button>
+    </div>
+
+    <div class="upload-area" onclick="document.getElementById('excelFile').click()">
+      <div class="upload-icon">📋</div>
+      <div class="upload-text">클릭하여 파일 선택</div>
+      <div class="upload-sub">.csv 파일 (엑셀에서 저장 시 "CSV UTF-8" 선택)</div>
+      <input type="file" id="excelFile" accept=".xlsx,.xls,.csv" style="display:none" onchange="handleFileUpload(this)">
+    </div>
+    <div class="warning-box" style="margin-top:14px;">⚠️ 업로드 시 기존 데이터에 추가됩니다. (중복 학생 제외)</div>
+    <div id="uploadPreview" style="margin-top:10px;"></div>
+    <div style="display:flex;gap:10px;margin-top:14px;">
+      <button class="btn btn-primary" style="flex:1" onclick="confirmUpload()">✅ 업로드 확인</button>
+      <button class="btn btn-secondary" onclick="closeModal('uploadModal')">취소</button>
+    </div>
+  </div>
+</div>
+
+<!-- 수강 설정 모달 -->
+<div class="modal-overlay" id="enrollModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title" id="enrollModalTitle">📚 수강 설정</h2>
+      <button class="modal-close" onclick="closeModal('enrollModal')">✕</button>
+    </div>
+    <div id="enrollModalContent"></div>
+    <div style="display:flex;gap:10px;margin-top:16px;">
+      <button class="btn btn-primary" style="flex:1" onclick="saveEnroll()">💾 저장</button>
+      <button class="btn btn-secondary" onclick="closeModal('enrollModal')">취소</button>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
